@@ -26,59 +26,37 @@ const scraperAgentConfig: AgentConfig = { // Renamed variable for clarity
   instructions: "This agent can search the web to answer questions. Ask me to search for something!",
   tools: [webSearchTool],
   toolLogic: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     webSearch: async (args: { query: string }, _transcriptLogsFiltered: TranscriptItem[]) => {
-      console.log(`Performing web search via REST API for: ${args.query}`);
-      const apiKey = process.env.OPENAI_API_KEY; // Use environment variable
-      if (!apiKey) {
-        console.error("OPENAI_API_KEY environment variable is not set.");
-        return "API key is missing, cannot perform web search.";
-      }
-
+      console.log(`ToolLogic: Calling /api/websearch for: ${args.query}`);
       try {
-        const response = await fetch("https://api.openai.com/v1/responses", {
+        const response = await fetch("/api/websearch", { // Relative path to our API route
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
           },
-          body: JSON.stringify({
-            model: "gpt-4.1-mini", // Or another model supporting the responses API
-            tools: [{ type: "web_search_preview", search_context_size: "high" }],
-            input: args.query,
-          }),
+          body: JSON.stringify({ query: args.query }), // Send query in the body
         });
 
         if (!response.ok) {
-          const errorData = await response.text();
-          console.error(`Web search API error: ${response.status} ${response.statusText}`, errorData);
-          return `Sorry, the web search failed with status: ${response.status}`;
+          const errorData = await response.json();
+          console.error(`ToolLogic: API route error: ${response.status}`, errorData);
+          return errorData.error || `Sorry, the web search failed with status: ${response.status}`;
         }
 
         const responseData = await response.json();
-        console.log("Web search REST API response:", responseData);
+        console.log("ToolLogic: API route response:", responseData);
         
-        const outputText = responseData.output_text; 
-
-        if (outputText === null || outputText === undefined) {
-             const messageItem = responseData.output?.find((item: any) => item.type === 'message' && item.content?.[0]?.type === 'output_text');
-             const textFromMessage = messageItem?.content?.[0]?.text;
-             if (textFromMessage) {
-                 return textFromMessage;
-             }
-            console.error("Web search did not return output_text in expected format.", responseData);
-            return "Sorry, I couldn't find any information for that query.";
-        }
-
-        return outputText;
+        return responseData.result || "Sorry, couldn't get a result from the search.";
 
       } catch (error: any) {
-        console.error("Error during web search REST API call:", error);
+        console.error("ToolLogic: Error calling internal API route:", error);
         if (error instanceof Error) {
           console.error("Error name:", error.name);
           console.error("Error message:", error.message);
           console.error("Error stack:", error.stack);
         }
-        return "Sorry, I encountered an error while searching the web. Check server logs for details.";
+        return "Sorry, I encountered an internal error while trying to search the web.";
       }
     },
   },
