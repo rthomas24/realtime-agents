@@ -1,8 +1,8 @@
 import { AllAgentConfigsType } from "@/app/types";
-import godMode from "./godMode";
+import scraper from "./scraper";
 
 export const allAgentSets: AllAgentConfigsType = {
-  godMode,
+  scraper,
 };
 
-export const defaultAgentSetKey = "godMode";
+export const defaultAgentSetKey = "scraper";

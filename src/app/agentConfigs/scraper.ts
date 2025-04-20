@@ -19,17 +19,16 @@ const webSearchTool: Tool = {
   },
 };
 
-// Define the scraper agent
-const scraper: AgentConfig = {
-  name: "scraper",
-  publicDescription: "Agent that can search the web using a custom tool.", // Updated description
-  instructions: "This agent can search the web to answer questions. Ask me to search for something!", // Updated instructions
-  tools: [webSearchTool], // Add the function tool
+// Define the Scraper agent configuration
+const scraperAgentConfig: AgentConfig = { // Renamed variable for clarity
+  name: "Scraper", // Renamed agent name
+  publicDescription: "Agent that can search the web using a custom tool.",
+  instructions: "This agent can search the web to answer questions. Ask me to search for something!",
+  tools: [webSearchTool],
   toolLogic: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     webSearch: async (args: { query: string }, _transcriptLogsFiltered: TranscriptItem[]) => {
       console.log(`Performing web search via REST API for: ${args.query}`);
-      const apiKey = process.env.OPENAI_API_KEY
+      const apiKey = process.env.OPENAI_API_KEY; // Use environment variable
       if (!apiKey) {
         console.error("OPENAI_API_KEY environment variable is not set.");
         return "API key is missing, cannot perform web search.";
@@ -57,15 +56,10 @@ const scraper: AgentConfig = {
 
         const responseData = await response.json();
         console.log("Web search REST API response:", responseData);
-
-        // Extract output_text - check the actual structure from the API docs/logs
-        // Based on the example, it might be directly on the response object?
-        // Or nested within an output item.
-        // Let's assume it's directly on the root for now, adjust if needed.
+        
         const outputText = responseData.output_text; 
 
         if (outputText === null || outputText === undefined) {
-             // Let's check if it's in the structure you provided earlier
              const messageItem = responseData.output?.find((item: any) => item.type === 'message' && item.content?.[0]?.type === 'output_text');
              const textFromMessage = messageItem?.content?.[0]?.text;
              if (textFromMessage) {
@@ -90,7 +84,7 @@ const scraper: AgentConfig = {
   },
 };
 
-// Inject transfer tools if needed
-const agents = injectTransferTools([scraper]);
+// Apply injectTransferTools to the specific agent config
+const agents = injectTransferTools([scraperAgentConfig]);
 
 export default agents; 

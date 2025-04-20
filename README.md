@@ -1,6 +1,6 @@
-# Realtime API Agent Demo (GodMode Focus)
+# Realtime API Agent Demo (Scraper Agent Focus)
 
-This demo showcases agentic patterns built on the Realtime API, now focused on a single scenario: `godMode`.
+This demo showcases agentic patterns built on the Realtime API, now focused on a single scenario: `scraper`.
 
 This example primarily demonstrates:
 - Defining a custom tool (`webSearch`) for an agent.
@@ -19,11 +19,11 @@ This example primarily demonstrates:
   OPENAI_API_KEY=your_openai_api_key_here
   ```
 - Start the server with `npm run dev`
-- Open your browser to [http://localhost:3000](http://localhost:3000) to see the app. It will automatically connect to the `godMode` scenario.
+- Open your browser to [http://localhost:3000](http://localhost:3000) to see the app. It will automatically connect to the `scraper` scenario.
 
 ## Configuring the Agent
 
-The primary configuration is in `src/app/agentConfigs/godMode.ts`. This file defines the `scraper` agent:
+The primary configuration is in `src/app/agentConfigs/scraper.ts`. This file defines the `Scraper` agent:
 
 ```typescript
 import { AgentConfig, Tool, TranscriptItem } from "@/app/types";
@@ -37,9 +37,9 @@ const webSearchTool: Tool = {
   // ... parameters ...
 };
 
-// Define the scraper agent
-const scraper: AgentConfig = {
-  name: "scraper",
+// Define the Scraper agent
+const scraperAgentConfig: AgentConfig = {
+  name: "Scraper",
   publicDescription: "Agent that can search the web using a custom tool.",
   instructions: "This agent can search the web to answer questions. Ask me to search for something!",
   tools: [webSearchTool], 
@@ -51,7 +51,7 @@ const scraper: AgentConfig = {
   },
 };
 
-const agents = injectTransferTools([scraper]);
+const agents = injectTransferTools([scraperAgentConfig]);
 
 export default agents;
 ```
@@ -62,7 +62,7 @@ This agent is configured with:
 - `toolLogic` that implements the `webSearch` tool by making a REST API call to OpenAI's `/v1/responses` endpoint with the `web_search_preview` tool.
 
 ### Next steps
-- Explore the implementation details in `src/app/agentConfigs/godMode.ts` to understand how the web search tool is defined and executed.
+- Explore the implementation details in `src/app/agentConfigs/scraper.ts` to understand how the web search tool is defined and executed.
 - Modify the `instructions` or add more tools/logic to customize the agent's behavior.
 - Review `src/app/App.tsx` to see how the agent configuration is loaded and how session updates (like setting the voice) are sent.
 - Refer to the [OpenAI Realtime API documentation](https://platform.openai.com/docs/guides/realtime) for more details on the underlying API.
@@ -71,4 +71,4 @@ This agent is configured with:
 - The conversation transcript is on the left, including tool calls, tool call responses, and agent changes. Click to expand non-message elements.
 - The event log is on the right, showing both client and server events. Click to see the full payload.
 - On the bottom, you can disconnect, toggle between automated voice-activity detection or PTT, turn off audio playback, and toggle logs.
-- *Note: The Scenario dropdown has been removed as only `godMode` is available.* The Agent dropdown remains in case `godMode` includes multiple agents in the future.
+- *Note: The Scenario dropdown has been removed as only the `scraper` scenario is available.* The Agent dropdown remains in case the `scraper` scenario includes multiple agents in the future.
