@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { TranscriptItem } from "@/app/types";
 import Image from "next/image";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
+import WebSearchResultCard from './TranscriptItems/WebSearchResultCard';
 
 export interface TranscriptProps {
   userText: string;
@@ -139,6 +140,17 @@ function Transcript({
                       </pre>
                     </div>
                   )}
+                </div>
+              );
+            } else if (type === "WEB_SEARCH_RESULT") {
+              return (
+                <div key={itemId} className="flex flex-col items-start">
+                  <WebSearchResultCard
+                    title={data?.title}
+                    description={data?.description}
+                    imageUrl={data?.imageUrl}
+                    link={data?.link}
+                  />
                 </div>
               );
             } else {

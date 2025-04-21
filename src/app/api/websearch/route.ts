@@ -39,13 +39,26 @@ export async function POST(request: Request) {
     console.log("API Route: OpenAI API response:", responseData);
 
     const messageItem = responseData.output?.find((item: any) => item.type === 'message' && item.content?.[0]?.type === 'output_text');
-    const textFromMessage = messageItem?.content?.[0]?.text;
+    const textContent = messageItem?.content?.[0];
 
-    if (textFromMessage) {
-      return NextResponse.json({ result: textFromMessage });
+    if (textContent?.text) {
+      const structuredData = {
+        title: textContent.annotations?.[0]?.title || "Web Search Result",
+        description: textContent.text,
+        link: textContent.annotations?.[0]?.url,
+        imageUrl: undefined
+      };
+      
+      return NextResponse.json({ 
+        type: "structured_result", 
+        data: structuredData 
+      });
     } else {
       console.error("API Route Error: Could not extract text from OpenAI response.", responseData);
-      return NextResponse.json({ error: 'Failed to process OpenAI response' }, { status: 500 });
+      return NextResponse.json({ 
+        type: "plain_text", 
+        data: { text: "Sorry, I couldn't properly format the search result." } 
+      }, { status: 500 });
     }
 
   } catch (error: any) {

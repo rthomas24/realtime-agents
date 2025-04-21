@@ -4,6 +4,7 @@ import { ServerEvent, SessionStatus, AgentConfig } from "@/app/types";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
 import { useEvent } from "@/app/contexts/EventContext";
 import { useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export interface UseHandleServerEventParams {
   setSessionStatus: (status: SessionStatus) => void;
@@ -31,6 +32,9 @@ export function useHandleServerEvent({
 
   const { logServerEvent } = useEvent();
 
+  // Ref to track if the next assistant message should be hidden
+  const hideNextAssistantMessage = useRef(false);
+
   const handleFunctionCall = async (functionCallParams: {
     name: string;
     call_id?: string;
@@ -46,20 +50,44 @@ export function useHandleServerEvent({
     if (currentAgent?.toolLogic?.[functionCallParams.name]) {
       const fn = currentAgent.toolLogic[functionCallParams.name];
       const fnResult = await fn(args, transcriptItems);
-      addTranscriptBreadcrumb(
-        `function call result: ${functionCallParams.name}`,
-        fnResult
-      );
 
-      sendClientEvent({
-        type: "conversation.item.create",
-        item: {
-          type: "function_call_output",
-          call_id: functionCallParams.call_id,
-          output: JSON.stringify(fnResult),
-        },
-      });
-      sendClientEvent({ type: "response.create" });
+      console.log("Hook: Received fnResult from toolLogic:", fnResult);
+
+      if (functionCallParams.name === 'webSearch' && fnResult?.type === 'structured_result') {
+        const newItemId = uuidv4().slice(0, 32);
+        addTranscriptBreadcrumb(
+          `structured_result_data`, 
+          fnResult.data
+        );
+        addTranscriptMessage(newItemId, 'assistant', '', false, 'WEB_SEARCH_RESULT', fnResult.data);
+
+        const textOutputForLLM = fnResult.data?.description || "Web search completed, but no description found.";
+        sendClientEvent({
+          type: "conversation.item.create",
+          item: {
+            type: "function_call_output",
+            call_id: functionCallParams.call_id,
+            output: JSON.stringify({ result: textOutputForLLM }), 
+          },
+        }, "send websearch text result");
+        
+        hideNextAssistantMessage.current = true;
+
+      } else {
+        addTranscriptBreadcrumb(
+          `function call result: ${functionCallParams.name}`,
+          fnResult
+        );
+        sendClientEvent({
+          type: "conversation.item.create",
+          item: {
+            type: "function_call_output",
+            call_id: functionCallParams.call_id,
+            output: JSON.stringify(fnResult), 
+          },
+        }, "send other function result");
+      }
+      sendClientEvent({ type: "response.create" }, "trigger response after function call");
     } else if (functionCallParams.name === "transferAgents") {
       const destinationAgent = args.destination_agent;
       const newAgentConfig =
@@ -131,10 +159,16 @@ export function useHandleServerEvent({
         }
 
         if (itemId && role) {
+          let shouldHide = false;
+          if (role === 'assistant' && hideNextAssistantMessage.current) {
+            console.log(`Hiding assistant message item ${itemId} because it follows a web search UI.`);
+            shouldHide = true;
+            hideNextAssistantMessage.current = false;
+          }
           if (role === "user" && !text) {
             text = "[Transcribing...]";
           }
-          addTranscriptMessage(itemId, role, text);
+          addTranscriptMessage(itemId, role, text, shouldHide);
         }
         break;
       }

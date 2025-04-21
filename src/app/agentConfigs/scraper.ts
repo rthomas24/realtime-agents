@@ -45,18 +45,18 @@ const scraperAgentConfig: AgentConfig = { // Renamed variable for clarity
         }
 
         const responseData = await response.json();
-        console.log("ToolLogic: API route response:", responseData);
         
-        return responseData.result || "Sorry, couldn't get a result from the search.";
+        return responseData;
 
       } catch (error: any) {
         console.error("ToolLogic: Error calling internal API route:", error);
+        const errorMessage = "Sorry, I encountered an internal error processing the search."; // More specific error
         if (error instanceof Error) {
           console.error("Error name:", error.name);
           console.error("Error message:", error.message);
           console.error("Error stack:", error.stack);
         }
-        return "Sorry, I encountered an internal error while trying to search the web.";
+        return errorMessage;
       }
     },
   },

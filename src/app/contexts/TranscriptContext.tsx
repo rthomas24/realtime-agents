@@ -6,7 +6,14 @@ import { TranscriptItem } from "@/app/types";
 
 type TranscriptContextValue = {
   transcriptItems: TranscriptItem[];
-  addTranscriptMessage: (itemId: string, role: "user" | "assistant", text: string, hidden?: boolean) => void;
+  addTranscriptMessage: (
+    itemId: string, 
+    role: "user" | "assistant", 
+    text: string, 
+    hidden?: boolean, 
+    type?: TranscriptItem['type'],
+    data?: Record<string, any>
+  ) => void;
   updateTranscriptMessage: (itemId: string, text: string, isDelta: boolean) => void;
   addTranscriptBreadcrumb: (title: string, data?: Record<string, any>) => void;
   toggleTranscriptItemExpand: (itemId: string) => void;
@@ -27,24 +34,36 @@ export const TranscriptProvider: FC<PropsWithChildren> = ({ children }) => {
     });
   }
 
-  const addTranscriptMessage: TranscriptContextValue["addTranscriptMessage"] = (itemId, role, text = "", isHidden = false) => {
+  const addTranscriptMessage: TranscriptContextValue["addTranscriptMessage"] = (
+    itemId, 
+    role, 
+    text = "", 
+    isHidden = false, 
+    itemType = "MESSAGE",
+    itemData = undefined
+  ) => {
     setTranscriptItems((prev) => {
-      if (prev.some((log) => log.itemId === itemId && log.type === "MESSAGE")) {
-        console.warn(`[addTranscriptMessage] skipping; message already exists for itemId=${itemId}, role=${role}, text=${text}`);
+      if (prev.some((log) => log.itemId === itemId && log.type === itemType)) {
+        console.warn(`[addTranscriptMessage] skipping; item already exists for itemId=${itemId}, type=${itemType}`);
         return prev;
       }
 
       const newItem: TranscriptItem = {
         itemId,
-        type: "MESSAGE",
+        type: itemType,
         role,
         title: text,
+        data: itemData,
         expanded: false,
         timestamp: newTimestampPretty(),
         createdAtMs: Date.now(),
-        status: "IN_PROGRESS",
+        status: "DONE",
         isHidden,
       };
+      
+      if (itemType === "MESSAGE") {
+        newItem.status = "IN_PROGRESS";
+      }
 
       return [...prev, newItem];
     });
