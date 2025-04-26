@@ -68,11 +68,15 @@ function Transcript({
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-white min-h-0 rounded-xl">
+    <div className="flex flex-col flex-1 min-h-0 rounded-xl" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)', borderWidth: '1px' }}>
       <div className="relative flex-1 min-h-0">
         <button
           onClick={handleCopyTranscript}
-          className={`absolute w-20 top-3 right-2 mr-1 z-10 text-sm px-3 py-2 rounded-full bg-gray-200 hover:bg-gray-300`}
+          className="absolute w-20 top-3 right-2 mr-1 z-10 text-sm px-3 py-2 rounded-full"
+          style={{ 
+            backgroundColor: 'var(--button-bg)', 
+            color: 'var(--button-text)'
+          }}
         >
           {justCopied ? "Copied!" : "Copy"}
         </button>
@@ -92,15 +96,17 @@ function Transcript({
               const isUser = role === "user";
               const baseContainer = "flex justify-end flex-col";
               const containerClasses = `${baseContainer} ${isUser ? "items-end" : "items-start"}`;
-              const bubbleBase = `max-w-lg p-3 rounded-xl ${isUser ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-black"}`;
+              const bubbleStyle = isUser 
+                ? { backgroundColor: 'var(--primary)', color: '#ffffff' }
+                : { backgroundColor: 'var(--secondary)', color: 'var(--foreground)' };
               const isBracketedMessage = title.startsWith("[") && title.endsWith("]");
               const messageStyle = isBracketedMessage ? "italic text-gray-400" : "";
               const displayTitle = isBracketedMessage ? title.slice(1, -1) : title;
 
               return (
                 <div key={itemId} className={containerClasses}>
-                  <div className={bubbleBase}>
-                    <div className={`text-xs ${isUser ? "text-gray-400" : "text-gray-500"} font-mono`}>
+                  <div className="max-w-lg p-3 rounded-xl" style={bubbleStyle}>
+                    <div className="text-xs font-mono" style={{ color: isUser ? 'rgba(255, 255, 255, 0.7)' : 'var(--foreground)', opacity: '0.7' }}>
                       {timestamp}
                     </div>
                     <div className={`whitespace-pre-wrap ${messageStyle}`}>
@@ -113,20 +119,23 @@ function Transcript({
               return (
                 <div
                   key={itemId}
-                  className="flex flex-col justify-start items-start text-gray-500 text-sm"
+                  className="flex flex-col justify-start items-start text-sm"
+                  style={{ color: 'var(--foreground)', opacity: '0.7' }}
                 >
                   <span className="text-xs font-mono">{timestamp}</span>
                   <div
-                    className={`whitespace-pre-wrap flex items-center font-mono text-sm text-gray-800 ${
+                    className={`whitespace-pre-wrap flex items-center font-mono text-sm ${
                       data ? "cursor-pointer" : ""
                     }`}
+                    style={{ color: 'var(--foreground)' }}
                     onClick={() => data && toggleTranscriptItemExpand(itemId)}
                   >
                     {data && (
                       <span
-                        className={`text-gray-400 mr-1 transform transition-transform duration-200 select-none font-mono ${
+                        className={`mr-1 transform transition-transform duration-200 select-none font-mono ${
                           expanded ? "rotate-90" : "rotate-0"
                         }`}
+                        style={{ color: 'var(--foreground)', opacity: '0.5' }}
                       >
                         ▶
                       </span>
@@ -134,8 +143,11 @@ function Transcript({
                     {title}
                   </div>
                   {expanded && data && (
-                    <div className="text-gray-800 text-left">
-                      <pre className="border-l-2 ml-1 border-gray-200 whitespace-pre-wrap break-words font-mono text-xs mb-2 mt-2 pl-2">
+                    <div className="text-left" style={{ color: 'var(--foreground)' }}>
+                      <pre 
+                        className="border-l-2 ml-1 whitespace-pre-wrap break-words font-mono text-xs mb-2 mt-2 pl-2"
+                        style={{ borderColor: 'var(--border)' }}
+                      >
                         {JSON.stringify(data, null, 2)}
                       </pre>
                     </div>
@@ -158,7 +170,8 @@ function Transcript({
               return (
                 <div
                   key={itemId}
-                  className="flex justify-center text-gray-500 text-sm italic font-mono"
+                  className="flex justify-center text-sm italic font-mono"
+                  style={{ color: 'var(--foreground)', opacity: '0.6' }}
                 >
                   Unknown item type: {type}{" "}
                   <span className="ml-2 text-xs">{timestamp}</span>
@@ -169,7 +182,7 @@ function Transcript({
         </div>
       </div>
 
-      <div className="p-4 flex items-center gap-x-2 flex-shrink-0 border-t border-gray-200">
+      <div className="p-4 flex items-center gap-x-2 flex-shrink-0" style={{ borderTopWidth: '1px', borderColor: 'var(--border)' }}>
         <input
           ref={inputRef}
           type="text"
@@ -180,13 +193,19 @@ function Transcript({
               onSendMessage();
             }
           }}
-          className="flex-1 px-4 py-2 focus:outline-none"
+          className="flex-1 px-4 py-2 focus:outline-none rounded-lg border"
           placeholder="Type a message..."
+          style={{ 
+            backgroundColor: 'var(--input-bg)', 
+            color: 'var(--input-text)', 
+            borderColor: 'var(--input-border)'
+          }}
         />
         <button
           onClick={onSendMessage}
           disabled={!canSend || !userText.trim()}
-          className="bg-gray-900 text-white rounded-full px-2 py-2 disabled:opacity-50"
+          className="text-white rounded-full px-2 py-2 disabled:opacity-50"
+          style={{ backgroundColor: 'var(--primary)' }}
         >
           <Image src="arrow.svg" alt="Send" width={24} height={24} />
         </button>

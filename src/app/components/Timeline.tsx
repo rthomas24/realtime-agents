@@ -34,25 +34,45 @@ function Timeline({ isExpanded }: TimelineProps) {
     <div
       className={
         (isExpanded ? "w-1/2 overflow-auto" : "w-0 overflow-hidden opacity-0") +
-        " transition-all rounded-xl duration-200 ease-in-out flex flex-col bg-white"
+        " transition-all rounded-xl duration-200 ease-in-out flex flex-col"
       }
       ref={timelineContainerRef}
+      style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)', borderWidth: isExpanded ? '1px' : '0' }}
     >
       {isExpanded && (
         <div>
-          <div className="font-semibold px-6 py-4 sticky top-0 z-10 text-base border-b bg-white">
+          <div 
+            className="font-semibold px-6 py-4 sticky top-0 z-10 text-base border-b"
+            style={{ 
+              backgroundColor: 'var(--card-bg)', 
+              borderColor: 'var(--border)',
+              color: 'var(--foreground)'
+            }}
+          >
             Timeline
           </div>
           <div className="p-4">
             {timelineItems.length === 0 ? (
-              <div className="text-center text-gray-500 py-4">
+              <div 
+                className="text-center py-4"
+                style={{ color: 'var(--foreground)', opacity: '0.6' }}
+              >
                 No web search results yet. Ask a question that requires web information.
               </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {timelineItems.map((item) => (
-                  <div key={item.itemId} className="border-b border-gray-200 pb-4">
-                    <div className="text-xs text-gray-500 mb-1">{item.timestamp}</div>
+                  <div 
+                    key={item.itemId} 
+                    className="border-b pb-4"
+                    style={{ borderColor: 'var(--border)' }}
+                  >
+                    <div 
+                      className="text-xs mb-1"
+                      style={{ color: 'var(--foreground)', opacity: '0.6' }}
+                    >
+                      {item.timestamp}
+                    </div>
                     <WebSearchResultCard
                       title={item.data?.title}
                       description={item.data?.description}

@@ -3,15 +3,50 @@
 @tailwind utilities;
 
 :root {
+  /* Light theme (default) */
   --background: #fafafa;
   --foreground: #171717;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary: #f3f4f6;
+  --secondary-hover: #e5e7eb;
+  --accent: #3b82f6;
+  --border: #e5e7eb;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --toolbar-bg: #f9fafb;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --input-text: #171717;
+  --button-bg: #f3f4f6;
+  --button-text: #171717;
+  --button-hover: #e5e7eb;
+  --button-active: #d1d5db;
+  --highlight: #f3f4f6;
+  --shadow: rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #1f2937;
+  --secondary-hover: #374151;
+  --accent: #60a5fa;
+  --border: #374151;
+  --card-bg: #111827;
+  --card-border: #1f2937;
+  --toolbar-bg: #111827;
+  --input-bg: #1f2937;
+  --input-border: #374151;
+  --input-text: #ededed;
+  --button-bg: #1f2937;
+  --button-text: #ededed;
+  --button-hover: #374151;
+  --button-active: #4b5563;
+  --highlight: #1f2937;
+  --shadow: rgba(0, 0, 0, 0.25);
 }
 
 body {
@@ -19,4 +54,16 @@ body {
   background: var(--background);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Apply theme styles to common elements */
+input, select, textarea {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+}
+
+button {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }

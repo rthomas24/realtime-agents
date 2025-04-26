@@ -398,22 +398,38 @@ function App() {
     }
   }, [isAudioPlaybackEnabled]);
 
+  // Initialize theme settings
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const systemTheme = prefersDark ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', systemTheme);
+      localStorage.setItem('theme', systemTheme);
+    }
+  }, []);
+
   return (
-    <div className="text-base flex flex-col h-screen bg-gray-100 text-gray-800 relative">
-      <div className="p-5 text-lg font-semibold flex justify-between items-center">
+    <div className="text-base flex flex-col h-screen text-gray-800 relative" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+      <div className="p-5 text-lg font-semibold flex justify-between items-center" style={{ padding: '10px', height: '60px', backgroundColor: 'var(--toolbar-bg)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center">
-          <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>
+          <div style={{ cursor: 'pointer' }}>
             <Image
-              src="/openai-logomark.svg"
-              alt="OpenAI Logo"
-              width={20}
-              height={20}
+              alt="QuickQAI Logo"
+              loading="lazy"
+              width={80}
+              height={80}
+              decoding="async"
+              data-nimg="1"
               className="mr-2"
+              style={{ color: 'transparent' }}
+              src="/quickqaiLogo.png"
             />
           </div>
-          <div>
-            Realtime API <span className="text-gray-500">Agents</span>
-          </div>
+          <div>QuickQAI</div>
         </div>
         <div className="flex items-center">
           {selectedAgentConfigSet && selectedAgentConfigSet.length > 1 && (
@@ -425,7 +441,12 @@ function App() {
                 <select
                   value={selectedAgentName}
                   onChange={handleSelectedAgentChange}
-                  className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
+                  className="appearance-none border rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
+                  style={{ 
+                    backgroundColor: 'var(--input-bg)', 
+                    borderColor: 'var(--input-border)', 
+                    color: 'var(--input-text)' 
+                  }}
                 >
                   {selectedAgentConfigSet?.map(agent => (
                     <option key={agent.name} value={agent.name}>
@@ -438,6 +459,7 @@ function App() {
                     className="h-4 w-4"
                     viewBox="0 0 20 20"
                     fill="currentColor"
+                    style={{ color: 'var(--input-text)' }}
                   >
                     <path
                       fillRule="evenodd"
