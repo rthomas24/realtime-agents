@@ -8,6 +8,7 @@ import Image from "next/image";
 // UI components
 import Transcript from "./components/Transcript";
 import Events from "./components/Events";
+import Timeline from "./components/Timeline";
 import BottomToolbar from "./components/BottomToolbar";
 
 // Types
@@ -42,6 +43,7 @@ function App() {
 
   const [isEventsPaneExpanded, setIsEventsPaneExpanded] =
     useState<boolean>(true);
+  const [isTimelinePaneExpanded, setIsTimelinePaneExpanded] = useState<boolean>(false);
   const [userText, setUserText] = useState<string>("");
   const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
   const [isPTTUserSpeaking, setIsPTTUserSpeaking] = useState<boolean>(false);
@@ -353,6 +355,10 @@ function App() {
     if (storedLogsExpanded) {
       setIsEventsPaneExpanded(storedLogsExpanded === "true");
     }
+    const storedTimelineExpanded = localStorage.getItem("timelineExpanded");
+    if (storedTimelineExpanded) {
+      setIsTimelinePaneExpanded(storedTimelineExpanded === "true");
+    }
     const storedAudioPlaybackEnabled = localStorage.getItem(
       "audioPlaybackEnabled"
     );
@@ -368,6 +374,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("logsExpanded", isEventsPaneExpanded.toString());
   }, [isEventsPaneExpanded]);
+
+  useEffect(() => {
+    localStorage.setItem("timelineExpanded", isTimelinePaneExpanded.toString());
+  }, [isTimelinePaneExpanded]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -453,6 +463,7 @@ function App() {
           }
         />
 
+        <Timeline isExpanded={isTimelinePaneExpanded} />
         <Events isExpanded={isEventsPaneExpanded} />
       </div>
 
@@ -466,6 +477,8 @@ function App() {
         handleTalkButtonUp={handleTalkButtonUp}
         isEventsPaneExpanded={isEventsPaneExpanded}
         setIsEventsPaneExpanded={setIsEventsPaneExpanded}
+        isTimelinePaneExpanded={isTimelinePaneExpanded}
+        setIsTimelinePaneExpanded={setIsTimelinePaneExpanded}
         isAudioPlaybackEnabled={isAudioPlaybackEnabled}
         setIsAudioPlaybackEnabled={setIsAudioPlaybackEnabled}
       />

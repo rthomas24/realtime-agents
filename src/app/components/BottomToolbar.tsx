@@ -11,6 +11,8 @@ interface BottomToolbarProps {
   handleTalkButtonUp: () => void;
   isEventsPaneExpanded: boolean;
   setIsEventsPaneExpanded: (val: boolean) => void;
+  isTimelinePaneExpanded: boolean;
+  setIsTimelinePaneExpanded: (val: boolean) => void;
   isAudioPlaybackEnabled: boolean;
   setIsAudioPlaybackEnabled: (val: boolean) => void;
 }
@@ -25,6 +27,8 @@ function BottomToolbar({
   handleTalkButtonUp,
   isEventsPaneExpanded,
   setIsEventsPaneExpanded,
+  isTimelinePaneExpanded,
+  setIsTimelinePaneExpanded,
   isAudioPlaybackEnabled,
   setIsAudioPlaybackEnabled,
 }: BottomToolbarProps) {
@@ -111,6 +115,19 @@ function BottomToolbar({
         />
         <label htmlFor="logs" className="flex items-center cursor-pointer">
           Logs
+        </label>
+      </div>
+
+      <div className="flex flex-row items-center gap-2">
+        <input
+          id="timeline"
+          type="checkbox"
+          checked={isTimelinePaneExpanded}
+          onChange={e => setIsTimelinePaneExpanded(e.target.checked)}
+          className="w-4 h-4"
+        />
+        <label htmlFor="timeline" className="flex items-center cursor-pointer">
+          Timeline
         </label>
       </div>
     </div>
