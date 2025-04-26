@@ -1,74 +1,44 @@
-# Realtime API Agent Demo (Scraper Agent Focus)
+# QuickQAI - OpenAI Realtime Agents
 
-This demo showcases agentic patterns built on the Realtime API, now focused on a single scenario: `scraper`.
+A web application that enables real-time voice interaction with AI agents featuring powerful web search capabilities.
 
-This example primarily demonstrates:
-- Defining a custom tool (`webSearch`) for an agent.
-- Using the OpenAI API (via direct REST call in this case) within a tool's logic to perform actions like web searching.
-- Basic agent configuration within the application structure.
+![Screenshot of QuickQAI](/public/quickQdemo.png)
 
-![Screenshot of the Realtime API Agents Demo](/public/screenshot.png) 
-*(Note: Screenshot may show previous examples)*
+## Quick Start
 
-## Setup
+### Setup
 
-- This is a Next.js typescript app
-- Install dependencies with `npm i`
-- **Important:** Create a `.env.local` file in the project root and add your OpenAI API key:
-  ```
-  OPENAI_API_KEY=your_openai_api_key_here
-  ```
-- Start the server with `npm run dev`
-- Open your browser to [http://localhost:3000](http://localhost:3000) to see the app. It will automatically connect to the `scraper` scenario.
+1. Clone this repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Create a `.env.local` file in the project root with your OpenAI API key:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+4. Start the application:
+   ```
+   npm run dev
+   ```
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Configuring the Agent
+### How to Use
 
-The primary configuration is in `src/app/agentConfigs/scraper.ts`. This file defines the `Scraper` agent:
+- Click "Connect" to start a session with the AI agent
+- Type your question or use the "Talk" button for voice input
+- View web search results in the Timeline panel
+- Toggle the interface settings using the gear icon
 
-```typescript
-import { AgentConfig, Tool, TranscriptItem } from "@/app/types";
-import { injectTransferTools } from "./utils";
-import fetch from 'node-fetch';
+## Features
 
-// Define the web search tool schema
-const webSearchTool: Tool = {
-  type: "function",
-  name: "webSearch",
-  // ... parameters ...
-};
+- **Real-time Voice Interaction**: Speak with the AI agent using WebRTC for low-latency communication
+- **Web Search**: Get real-time information from the web through natural conversation
+- **Dark/Light Mode**: Choose between light, dark, or system theme
+- **Push-to-Talk**: Option for controlled voice input
+- **Event Logging**: View the communication between client and server
+- **Timeline View**: Track web search results in chronological order
 
-// Define the Scraper agent
-const scraperAgentConfig: AgentConfig = {
-  name: "Scraper",
-  publicDescription: "Agent that can search the web using a custom tool.",
-  instructions: "This agent can search the web to answer questions. Ask me to search for something!",
-  tools: [webSearchTool], 
-  toolLogic: {
-    webSearch: async (args: { query: string }, /* ... */) => {
-      // Logic to call OpenAI /v1/responses API using fetch
-      // ... see file for full implementation ...
-    },
-  },
-};
+## Configuration
 
-const agents = injectTransferTools([scraperAgentConfig]);
-
-export default agents;
-```
-
-This agent is configured with:
-- Instructions on its capabilities.
-- A `webSearch` tool definition.
-- `toolLogic` that implements the `webSearch` tool by making a REST API call to OpenAI's `/v1/responses` endpoint with the `web_search_preview` tool.
-
-### Next steps
-- Explore the implementation details in `src/app/agentConfigs/scraper.ts` to understand how the web search tool is defined and executed.
-- Modify the `instructions` or add more tools/logic to customize the agent's behavior.
-- Review `src/app/App.tsx` to see how the agent configuration is loaded and how session updates (like setting the voice) are sent.
-- Refer to the [OpenAI Realtime API documentation](https://platform.openai.com/docs/guides/realtime) for more details on the underlying API.
-
-## UI
-- The conversation transcript is on the left, including tool calls, tool call responses, and agent changes. Click to expand non-message elements.
-- The event log is on the right, showing both client and server events. Click to see the full payload.
-- On the bottom, you can disconnect, toggle between automated voice-activity detection or PTT, turn off audio playback, and toggle logs.
-- *Note: The Scenario dropdown has been removed as only the `scraper` scenario is available.* The Agent dropdown remains in case the `scraper` scenario includes multiple agents in the future.
+The agent is configured in `src/app/agentConfigs/` with tools like web search enabled by default.
